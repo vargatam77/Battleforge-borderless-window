@@ -59,6 +59,7 @@ void __fastcall TfrmBF::mnuAutoStartClick(TObject *Sender)
 
 const char* windowTitle = "BattleForge 1.2 Retail";
 HWND wnd, oldwnd = NULL;
+bool hadFocus = false;
 
 RECT GetWindowSize(HWND hwnd) {
     RECT rect;
@@ -146,16 +147,19 @@ void __fastcall TfrmBF::tmrCursorLockTimer(TObject *Sender)
             RepositionWindow(wnd);
         }
 
-        if (GetForegroundWindow() == wnd) {
+        if (GetForegroundWindow() == wnd && !hadFocus) {
             LockCursorToWindow(wnd);
 			UpdateTrayIcon(true, true);
-        } else {
+            hadFocus = true;
+        } else if(GetForegroundWindow() != wnd && hadFocus) {
 			UpdateTrayIcon(true, false);
+            hadFocus = false;
         }
     } else {
     	pbSearching->StepBy(5);
         if(pbSearching->Position == 100) pbSearching->Position = 0;
 		UpdateTrayIcon(false, false);
+        hadFocus = false;
     }
 }
 

@@ -10,7 +10,8 @@ WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
         try
         {
                  Application->Initialize();
-                 Application->CreateForm(__classid(TfrmBF), &frmBF);
+                 Application->Title = "Borderless window for Battleforge";
+		Application->CreateForm(__classid(TfrmBF), &frmBF);
                  Application->Run();
         }
         catch (Exception &exception)
