@@ -83,33 +83,7 @@ void RepositionWindow(HWND hwnd) {
     int yOffset = (winRect.bottom - winRect.top - (screenRect.bottom - screenRect.top)) - xOffset;
 
     MoveWindow(hwnd, -xOffset, -yOffset, winRect.right - winRect.left, winRect.bottom - winRect.top, TRUE);
-}
-
-void LockCursorToWindow(HWND hwnd) {
-	RECT clientRect;
-	if (!GetClientRect(hwnd, &clientRect)) {
-    	ShowMessage("GetClientRect failed with error code: " + IntToStr(GetLastError()));
-        return;
-    }
-
-    POINT topLeft = { clientRect.left, clientRect.top };
-	POINT bottomRight = { clientRect.right, clientRect.bottom };
-
-    if (!ClientToScreen(hwnd, &topLeft)) {
-    	ShowMessage("ClientToScreen failed for topLeft with error code: " + IntToStr(GetLastError()));
-	    return;
-    }
-	if (!ClientToScreen(hwnd, &bottomRight)) {
-		ShowMessage("ClientToScreen failed for bottomRight with error code: " + IntToStr(GetLastError()));
-    	return;
-    }
-
-	RECT screenRect = { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
-    
-    if (!ClipCursor(&screenRect)) {
-    	ShowMessage("ClipCursor failed with error code: " + IntToStr(GetLastError()));
-    }
-}
+}       
 
 void UpdateTrayIcon(bool gameFound, bool gameActive) {
     if (!gameFound) {
@@ -122,6 +96,31 @@ void UpdateTrayIcon(bool gameFound, bool gameActive) {
         frmBF->trIcon->IconIndex = 1;
         frmBF->trIcon->Hint = "Active game found";
     }
+}
+
+void LockCursorToWindow(HWND hwnd) {
+	RECT clientRect;
+	GetClientRect(hwnd, &clientRect);
+
+    POINT topLeft = { clientRect.left, clientRect.top };
+	POINT bottomRight = { clientRect.right, clientRect.bottom };
+
+    ClientToScreen(hwnd, &topLeft);
+	ClientToScreen(hwnd, &bottomRight);
+
+	RECT screenRect = { topLeft.x, topLeft.y, bottomRight.x, bottomRight.y };
+
+    RECT currentRect;
+    GetClipCursor(&currentRect);
+
+    if(currentRect.left != screenRect.left ||
+    	currentRect.top != screenRect.top ||
+	    currentRect.right != screenRect.right ||
+	    currentRect.bottom != screenRect.bottom){
+    		ClipCursor(&screenRect);
+			UpdateTrayIcon(true, true);
+	    }
+
 }
 
     /*// Remove title bar and borders
@@ -147,19 +146,13 @@ void __fastcall TfrmBF::tmrCursorLockTimer(TObject *Sender)
             RepositionWindow(wnd);
         }
 
-        if (GetForegroundWindow() == wnd && !hadFocus) {
+        if (GetForegroundWindow() == wnd) {
             LockCursorToWindow(wnd);
-			UpdateTrayIcon(true, true);
-            hadFocus = true;
-        } else if(GetForegroundWindow() != wnd && hadFocus) {
-			UpdateTrayIcon(true, false);
-            hadFocus = false;
         }
     } else {
     	pbSearching->StepBy(5);
         if(pbSearching->Position == 100) pbSearching->Position = 0;
 		UpdateTrayIcon(false, false);
-        hadFocus = false;
     }
 }
 
