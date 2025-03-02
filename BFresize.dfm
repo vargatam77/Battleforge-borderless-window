@@ -614,6 +614,15 @@ object frmBF: TfrmBF
         Caption = 'Start &automatically'
         OnClick = mnuAutoStartClick
       end
+      object N1: TMenuItem
+        Caption = '-'
+        Visible = False
+      end
+      object mnuKubik: TMenuItem
+        Caption = 'For Kubik'
+        Visible = False
+        OnClick = mnuKubikClick
+      end
     end
     object mnuClose: TMenuItem
       Caption = '&Close'

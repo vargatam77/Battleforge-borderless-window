@@ -28,6 +28,8 @@ __published:	// IDE-managed Components
 	TMenuItem *mnuAutoStart;
 	TMenuItem *mnuStart;
 	TProgressBar *pbSearching;
+	TMenuItem *mnuKubik;
+	TMenuItem *N1;
     void __fastcall tmrCursorLockTimer(TObject *Sender);
 	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall mnuRestoreClick(TObject *Sender);
@@ -35,6 +37,7 @@ __published:	// IDE-managed Components
 	void __fastcall mnuStartClick(TObject *Sender);
 	void __fastcall mnuAutoStartClick(TObject *Sender);
 	void __fastcall FormActivate(TObject *Sender);
+	void __fastcall mnuKubikClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TfrmBF(TComponent* Owner);

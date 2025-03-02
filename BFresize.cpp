@@ -57,8 +57,8 @@ void __fastcall TfrmBF::mnuAutoStartClick(TObject *Sender)
     tmrCursorLock->Enabled = true;
 }
 
-const char* windowTitle = "BattleForge 1.2 Retail";
-HWND wnd, oldwnd = NULL;
+const char* appTitle = "BattleForge 1.2 retail";
+HWND wnd, oldWnd, foreWnd = NULL;
 bool hadFocus = false;
 
 RECT GetWindowSize(HWND hwnd) {
@@ -120,34 +120,28 @@ void LockCursorToWindow(HWND hwnd) {
     		ClipCursor(&screenRect);
 			UpdateTrayIcon(true, true);
 	    }
-
 }
-
-    /*// Remove title bar and borders
-    LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
-    style &= ~(WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
-    SetWindowLongPtr(hwnd, GWL_STYLE, style);
-
-    // Remove extended styles that may cause issues
-    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-    exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
-    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);*/
 
 //---------------------------------------------------------------------------
 
 void __fastcall TfrmBF::tmrCursorLockTimer(TObject *Sender)
 {
-    oldwnd = wnd;
-    wnd = FindWindow(NULL, windowTitle);
+    wnd = FindWindow(NULL, appTitle);
 
-    if (wnd) {
-        if (wnd != oldwnd) {
+    if (wnd) {       
+	    foreWnd = GetForegroundWindow();
+
+        if (wnd != oldWnd && wnd == foreWnd) {
         	trIcon->Minimize();
             RepositionWindow(wnd);
+            oldWnd = wnd;
         }
 
-        if (GetForegroundWindow() == wnd) {
+        if (foreWnd == wnd) {
             LockCursorToWindow(wnd);
+        } else if (foreWnd != oldWnd) { 
+			UpdateTrayIcon(true, false);
+			oldWnd = foreWnd;
         }
     } else {
     	pbSearching->StepBy(5);
@@ -216,5 +210,23 @@ void __fastcall TfrmBF::FormActivate(TObject *Sender)
     }	
 }
 
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmBF::mnuKubikClick(TObject *Sender)
+{
+	HWND hwnd = FindWindow(NULL, appTitle);
+
+    // Remove title bar and borders
+    LONG_PTR style = GetWindowLongPtr(hwnd, GWL_STYLE);
+    style &= ~(WS_CAPTION | WS_THICKFRAME | WS_SYSMENU | WS_MINIMIZEBOX | WS_MAXIMIZEBOX);
+    SetWindowLongPtr(hwnd, GWL_STYLE, style);
+
+    // Remove extended styles that may cause issues
+    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
+    exStyle &= ~(WS_EX_DLGMODALFRAME | WS_EX_CLIENTEDGE | WS_EX_STATICEDGE);
+    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
+
+    MoveWindow(hwnd, 0, 0, 1920, 1080, TRUE);
+}
 //---------------------------------------------------------------------------
 
